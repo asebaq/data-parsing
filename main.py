@@ -26,7 +26,16 @@ result['file_name'] = args.path.split('/')[-1]
 
 if args.type.lower() == 'csv':
     result_path = os.path.join(result_path, 'csv')
-    pass
+    csv_data = csv.reader(file_path, delimiter=',')
+    line_count = 0
+    for row in csv_data:
+        if line_count == 0:
+            print(f'Column names are {", ".join(row)}')
+            line_count += 1
+        else:
+            print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
+            line_count += 1
+
 if args.type.lower() == 'xml':
     tree = ET.parse(file_path)
     root = tree.getroot()
