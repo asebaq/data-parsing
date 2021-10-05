@@ -22,6 +22,7 @@ class XMLParser(Parser):
         tree = ET.parse(self.file_name)
         root = tree.getroot()
         trans = root.find('Transaction')
+        self.result['file_name'] = self.file_name.split('/')[-1]
 
         for i, customer in enumerate(trans.findall('Customer')):
             self.result['transaction'] = list()
