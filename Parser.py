@@ -118,5 +118,9 @@ class CSVParser(Parser):
                         if row2['owner_id'] == self.result['transaction'][idx]['customer']['id']:
                             vehicles_count += 1
                             del row2["owner_id"]
-                            self.result['transaction'][idx]['vehicles'].append(row2)
+                            self.result['transaction'][idx]['vehicles'].append(dict(row2))
+                            vin_number = self.result['transaction'][idx]['vehicles'][-1]['vin_number']
+                            model_year = self.result['transaction'][idx]['vehicles'][-1]['model_year']
+                            enrich_data = self.decode_vin(vin_number, model_year)
+                            self.result['transaction'][idx]['vehicles'][-1].update(enrich_data)
         return self.result
