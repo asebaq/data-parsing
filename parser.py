@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import argparse
 import os
 from utils import save_json, get_database
@@ -6,6 +7,7 @@ from Parser import CSVParser, XMLParser
 
 # python parser.py csv <customer file> <vehicle file>
 # python parser.py csv ./python_task_data/input_data/csv/customers.csv ./python_task_data/input_data/csv/vehicles.csv
+# python parser.py xml <xml file>
 # python parser.py xml ./python_task_data/input_data/xml/file1.xml
 
 
