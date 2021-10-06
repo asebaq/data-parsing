@@ -3,17 +3,20 @@ import os
 from utils import save_json, get_database
 from Parser import CSVParser, XMLParser
 
-
+# USAGE
 # python parser.py csv <customer file> <vehicle file>
 # python parser.py csv ./python_task_data/input_data/csv/customers.csv ./python_task_data/input_data/csv/vehicles.csv
+# python parser.py xml <xml file>
 # python parser.py xml ./python_task_data/input_data/xml/file1.xml
 
 
 def main(args):
     result_path = os.path.abspath('./output')
     result_path = os.path.join(result_path, args.format.lower())
+    # Connect to DB
     db_config_file = './db_config.ini'
     trufla_db = get_database(db_config_file)
+    # Parse XML files
     if args.format.lower() == 'xml':
         xml_col = trufla_db["xml"]
         for xml_file in args.files:
@@ -22,6 +25,7 @@ def main(args):
             save_json(result_path, result)
             xml_col.insert_one(result)
 
+    # Parse CSV files
     elif args.format.lower() == 'csv':
         csv_col = trufla_db["csv"]
         for i in range(0, len(args.files) - 1, 2):
