@@ -1,5 +1,7 @@
 import os
 import xml.etree.ElementTree as ET
+import csv
+import datetime
 
 
 class Parser:
@@ -65,5 +67,33 @@ class XMLParser(Parser):
 
 
 class CSVParser(Parser):
+    def __init__(self, file1_name, file2_name, file_type=None):
+        super().__init__(file1_name, file_type)
+        if not os.path.isfile(file2_name):
+            raise FileNotFoundError
+        self.file2_name = os.path.abspath(file2_name)
+
     def parse(self):
-        pass
+        self.result['file_name'] = self.file_name.split('/')[-1] + '_' + self.file2_name.split('/')[-1]
+        self.result['transaction'] = list()
+
+        with open(self.file_name, 'r', newline='') as csv_file1:
+            customers_data = csv.DictReader(csv_file1)
+            for i, row1 in enumerate(customers_data, start=1):
+                idx = i - 1
+                vehicles_count = -1
+                self.result['transaction'].append(dict())
+                date_time_obj = datetime.datetime.strptime(row1['date'], '%d/%m/%Y')
+                self.result['transaction'][idx]['date'] = str(date_time_obj.date())
+                del row1['date']
+
+                self.result['transaction'][idx]['customer'] = dict(row1)
+                self.result['transaction'][idx]['vehicles'] = list()
+                with open(self.file2_name, 'r', newline='') as csv_file2:
+                    vehicles_data = csv.DictReader(csv_file2)
+                    for j, row2 in enumerate(vehicles_data, start=1):
+                        if row2['owner_id'] == self.result['transaction'][idx]['customer']['id']:
+                            vehicles_count += 1
+                            del row2["owner_id"]
+                            self.result['transaction'][idx]['vehicles'].append(row2)
+        return self.result
