@@ -3,7 +3,7 @@ import os
 from utils import save_json
 from Parser import CSVParser, XMLParser
 
-
+# USAGE
 # python parser.py csv <customer file> <vehicle file>
 # python parser.py csv ./python_task_data/input_data/csv/customers.csv ./python_task_data/input_data/csv/vehicles.csv
 
@@ -11,13 +11,14 @@ from Parser import CSVParser, XMLParser
 def main(args):
     result_path = os.path.abspath('./output')
     result_path = os.path.join(result_path, args.format.lower())
-
+    # Parse XML files
     if args.format.lower() == 'xml':
         for xml_file in args.files:
             xml_parser = XMLParser(xml_file, args.format)
             result = xml_parser.parse()
             save_json(result_path, result)
 
+    # Parse CSV files
     elif args.format.lower() == 'csv':
         for i in range(0, len(args.files)-1, 2):
             csv_parser = CSVParser(args.files[i], args.files[i+1], args.format)

@@ -22,12 +22,21 @@ class Parser:
 
 
 class XMLParser(Parser):
+    """
+        XML Parser class
+    """
     def parse(self):
+        """
+            Parse XML file into Dict object
+            :return: Dict object
+        """
+        # Load XML file
         tree = ET.parse(self.file_name)
         root = tree.getroot()
         trans = root.find('Transaction')
         self.result['file_name'] = self.file_name.split('/')[-1]
 
+        # Extract customers data
         for i, customer in enumerate(trans.findall('Customer')):
             self.result['transaction'] = list()
             self.result['transaction'].append({'customer': customer.attrib})
@@ -52,6 +61,7 @@ class XMLParser(Parser):
             if auto is None:
                 return self.result
 
+            # Extract vehicles data
             for j, vehicle in enumerate(auto.findall('Vehicle')):
                 self.result['transaction'][i]['vehicles'].append(dict())
 
@@ -70,6 +80,9 @@ class XMLParser(Parser):
 
 
 class CSVParser(Parser):
+    """
+        CSV Parser class
+    """
     def __init__(self, file1_name, file2_name, file_type=None):
         super().__init__(file1_name, file_type)
         if not os.path.isfile(file2_name):
@@ -77,9 +90,13 @@ class CSVParser(Parser):
         self.file2_name = os.path.abspath(file2_name)
 
     def parse(self):
+        """
+            Parse CSV file into Dict object
+            :return: Dict object
+        """
         self.result['file_name'] = self.file_name.split('/')[-1] + '_' + self.file2_name.split('/')[-1]
         self.result['transaction'] = list()
-
+        # Extract customers data
         with open(self.file_name, 'r', newline='') as csv_file1:
             customers_data = csv.DictReader(csv_file1)
             for i, row1 in enumerate(customers_data, start=1):
@@ -92,6 +109,7 @@ class CSVParser(Parser):
 
                 self.result['transaction'][idx]['customer'] = dict(row1)
                 self.result['transaction'][idx]['vehicles'] = list()
+                # Extract vehicles data
                 with open(self.file2_name, 'r', newline='') as csv_file2:
                     vehicles_data = csv.DictReader(csv_file2)
                     for j, row2 in enumerate(vehicles_data, start=1):
