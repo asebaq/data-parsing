@@ -2,6 +2,7 @@ import os
 import xml.etree.ElementTree as ET
 import csv
 import datetime
+import requests
 
 
 class Parser:
@@ -14,6 +15,21 @@ class Parser:
             _, file_type = os.path.splitext(file_name)
         self.file_type = file_type
         self.result = dict()
+
+    def decode_vin(self, vin_number, model_year):
+        url = f'https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/{vin_number}?format=json&modelyear={model_year}'
+        response = requests.get(url)
+        result = dict()
+        result['manufacturer'] = ''
+        result['plant_country'] = ''
+        result['vehicle_type'] = ''
+        if response.status_code == 200:
+            data = response.json()
+            result['manufacturer'] = data['Results'][0]['Manufacturer']
+            result['plant_country'] = data['Results'][0]['PlantCountry']
+            result['vehicle_type'] = data['Results'][0]['VehicleType']
+            result['model'] = data['Results'][0]['Model']
+        return result
 
     def parse(self):
         raise NotImplementedError
@@ -63,6 +79,10 @@ class XMLParser(Parser):
 
                 model_year = vehicle.find('ModelYear').text
                 self.result['transaction'][i]['vehicles'][j]['model_year'] = model_year
+
+                enrich_data = self.decode_vin(vin_number, model_year)
+                self.result['transaction'][i]['vehicles'][j].update(enrich_data)
+
         return self.result
 
 
