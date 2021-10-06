@@ -18,7 +18,7 @@ def main(args):
     os.makedirs(result_path, exist_ok=True)
     ct = datetime.datetime.now()
     ts = str(ct.timestamp())
-    result_path = os.path.join(result_path, f"{ts}_{result['file_name']}.json")
+    result_path = os.path.join(result_path, f"{ts}_{result['file_name'][:-4]}.json")
 
     with open(result_path, 'w') as results_file:
         json.dump(result, results_file, ensure_ascii=False, indent=4)
