@@ -1,0 +1,2 @@
+# Run docker image with user credentials
+docker run -d --rm --name mongo -p 27017:27017 -v mongodbdata:/data/db -e MONGO_INITDB_ROOT_USERNAME=trufla_admin -e MONGO_INITDB_ROOT_PASSWORD=P@ssw0rd mongo
