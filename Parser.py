@@ -9,7 +9,7 @@ class Parser:
     """
         Abstract Parser class
     """
-    def __init__(self, file_name, file_type=None, is_enrich=False):
+    def __init__(self, file_name, file_type=None, is_enrich=True):
         if not os.path.isfile(file_name):
             raise FileNotFoundError
         self.file_name = os.path.abspath(file_name)
@@ -102,7 +102,7 @@ class CSVParser(Parser):
     """
         CSV Parser class
     """
-    def __init__(self, file1_name, file2_name, file_type=None, is_enrich=False):
+    def __init__(self, file1_name, file2_name, file_type=None, is_enrich=True):
         super().__init__(file1_name, file_type, is_enrich)
         if not os.path.isfile(file2_name):
             raise FileNotFoundError
