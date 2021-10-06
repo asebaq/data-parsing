@@ -70,6 +70,7 @@ class XMLParser(Parser):
 
             units = customer.find('Units')
             auto = units.find('Auto')
+
             self.result['transaction'][i]['vehicles'] = list()
 
             if auto is None:

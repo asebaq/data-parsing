@@ -3,7 +3,6 @@ import json
 import os
 import datetime
 import urllib
-import requests
 import pymongo
 
 
@@ -16,6 +15,9 @@ def jprint(obj):
 
 
 def save_json(file_dir, file_data):
+    """
+        The function is to save Dict object to a JSON file
+    """
     os.makedirs(file_dir, exist_ok=True)
     ct = datetime.datetime.now()
     ts = str(ct.timestamp())
@@ -28,6 +30,10 @@ def save_json(file_dir, file_data):
 
 
 def get_database(config_file, stage='dev'):
+    """
+        The function is to connect to a mongodb
+        :return: db object
+    """
     # Load db config
     config = configparser.ConfigParser()
     config.read(config_file)

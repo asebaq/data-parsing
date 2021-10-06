@@ -26,3 +26,6 @@ class TestParser(unittest.TestCase):
                 ground_truth = json.load(gt_file)
                 self.assertEqual(result, ground_truth)
 
+
+if __name__ == '__main__':
+    unittest.main()
