@@ -6,10 +6,12 @@ import datetime
 
 class Parser:
     def __init__(self, file_name, file_type=None):
+        # Do simple file validation
         if not os.path.isfile(file_name):
             raise FileNotFoundError
         self.file_name = os.path.abspath(file_name)
-
+        
+        # If type is none we can extract it
         if file_type is None:
             _, file_type = os.path.splitext(file_name)
         self.file_type = file_type
