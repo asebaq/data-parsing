@@ -13,16 +13,18 @@ def main(args):
     result_path = os.path.join(result_path, args.format.lower())
 
     if args.format.lower() == 'xml':
-        xml_parser = XMLParser(args.files[0], args.format)
-        result = xml_parser.parse()
+        for xml_file in args.path:
+            xml_parser = XMLParser(xml_file, args.format)
+            result = xml_parser.parse()
+            save_json(result_path, result)
 
     elif args.format.lower() == 'csv':
-        csv_parser = CSVParser(args.files[0], args.files[1], args.format)
-        result = csv_parser.parse()
+        for i in range(0, len(args.files)-1, 2):
+            csv_parser = CSVParser(args.files[i], args.files[i+1], args.format)
+            result = csv_parser.parse()
+            save_json(result_path, result)
     else:
         print("File format is not supported")
-        return
-    save_json(result_path, result)
 
 
 if __name__ == '__main__':
