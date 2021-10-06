@@ -19,7 +19,6 @@ class Parser:
     # TODO: Add a validation function (To validate against missing fields)
 
 
-
 class XMLParser(Parser):
     def parse(self):
         tree = ET.parse(self.file_name)

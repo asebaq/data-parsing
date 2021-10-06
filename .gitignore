@@ -130,3 +130,5 @@ dmypy.json
 /*.zip
 /python_task_data
 /*.pdf
+/output
+/.idea
