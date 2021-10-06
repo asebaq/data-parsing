@@ -6,6 +6,9 @@ from utils import jprint
 from Parser import XMLParser
 
 
+# python main.py xml <file>
+# python main.py xml ./python_task_data/input_data/xml/file1.xml
+
 def main(args):
 
     xml_parser = XMLParser(args.path, args.type)
@@ -26,8 +29,8 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-t', '--type', help='Parsed file type')
-    parser.add_argument('-p', '--path', help='Parsed file path')
+    parser.add_argument('type', help='Parsed file type')
+    parser.add_argument('path', help='Parsed file path')
     args = parser.parse_args()
     main(args)
 
