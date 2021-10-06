@@ -3,11 +3,16 @@ import xml.etree.ElementTree as ET
 
 
 class Parser:
+    """
+        Parser abstract class
+    """
     def __init__(self, file_name, file_type=None):
+        # Do simple file validation
         if not os.path.isfile(file_name):
             raise FileNotFoundError
         self.file_name = os.path.abspath(file_name)
 
+        # If type is none we can extract it
         if file_type is None:
             _, file_type = os.path.splitext(file_name)
         self.file_type = file_type
@@ -20,12 +25,21 @@ class Parser:
 
 
 class XMLParser(Parser):
+    """
+        XML Parser class
+    """
     def parse(self):
+        """
+            Parse XML file into Dict object
+            :return: Dict object
+        """
+        # Load XML file
         tree = ET.parse(self.file_name)
         root = tree.getroot()
         trans = root.find('Transaction')
         self.result['file_name'] = self.file_name.split('/')[-1]
 
+        # Extract customers data
         for i, customer in enumerate(trans.findall('Customer')):
             self.result['transaction'] = list()
             self.result['transaction'].append({'customer': customer.attrib})
@@ -50,6 +64,7 @@ class XMLParser(Parser):
             if auto is None:
                 return self.result
 
+            # Extract vehicles data
             for j, vehicle in enumerate(auto.findall('Vehicle')):
                 self.result['transaction'][i]['vehicles'].append(dict())
 
@@ -68,5 +83,8 @@ class XMLParser(Parser):
 
 
 class CSVParser(Parser):
+    """
+        CSV Parser class
+    """
     def parse(self):
         pass
