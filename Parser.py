@@ -6,23 +6,37 @@ import requests
 
 
 class Parser:
+    """
+        Parser abstract class
+    """
     def __init__(self, file_name, file_type=None):
+        # Do simple file validation
         if not os.path.isfile(file_name):
             raise FileNotFoundError
         self.file_name = os.path.abspath(file_name)
 
+        # If type is none we can extract it
         if file_type is None:
             _, file_type = os.path.splitext(file_name)
         self.file_type = file_type
         self.result = dict()
 
     def decode_vin(self, vin_number, model_year):
+        """
+            The function is to decode the VIN number to get manufacturer, plant country, vehicle type, and model
+            :param vin_number:
+            :param model_year:
+            :return:
+        """
+        # Request data from API
         url = f'https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/{vin_number}?format=json&modelyear={model_year}'
         response = requests.get(url)
         result = dict()
         result['manufacturer'] = ''
         result['plant_country'] = ''
         result['vehicle_type'] = ''
+        result['model'] = ''
+        # Parse API response
         if response.status_code == 200:
             data = response.json()
             result['manufacturer'] = data['Results'][0]['Manufacturer']
@@ -38,12 +52,17 @@ class Parser:
 
 
 class XMLParser(Parser):
+    """
+        Parse XML file into Dict object
+        :return: Dict object
+    """
     def parse(self):
         tree = ET.parse(self.file_name)
         root = tree.getroot()
         trans = root.find('Transaction')
         self.result['file_name'] = self.file_name.split('/')[-1]
 
+        # Extract customers data
         for i, customer in enumerate(trans.findall('Customer')):
             self.result['transaction'] = list()
             self.result['transaction'].append({'customer': customer.attrib})
@@ -68,6 +87,7 @@ class XMLParser(Parser):
             if auto is None:
                 return self.result
 
+            # Extract vehicles data
             for j, vehicle in enumerate(auto.findall('Vehicle')):
                 self.result['transaction'][i]['vehicles'].append(dict())
 
@@ -90,6 +110,9 @@ class XMLParser(Parser):
 
 
 class CSVParser(Parser):
+    """
+        CSV Parser class
+    """
     def __init__(self, file1_name, file2_name, file_type=None):
         super().__init__(file1_name, file_type)
         if not os.path.isfile(file2_name):
@@ -97,9 +120,14 @@ class CSVParser(Parser):
         self.file2_name = os.path.abspath(file2_name)
 
     def parse(self):
+        """
+            Parse CSV file into Dict object
+            :return: Dict object
+        """
         self.result['file_name'] = self.file_name.split('/')[-1] + '_' + self.file2_name.split('/')[-1]
         self.result['transaction'] = list()
 
+        # Extract customers data
         with open(self.file_name, 'r', newline='') as csv_file1:
             customers_data = csv.DictReader(csv_file1)
             for i, row1 in enumerate(customers_data, start=1):
@@ -112,6 +140,7 @@ class CSVParser(Parser):
 
                 self.result['transaction'][idx]['customer'] = dict(row1)
                 self.result['transaction'][idx]['vehicles'] = list()
+                # Extract vehicles data
                 with open(self.file2_name, 'r', newline='') as csv_file2:
                     vehicles_data = csv.DictReader(csv_file2)
                     for j, row2 in enumerate(vehicles_data, start=1):
