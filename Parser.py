@@ -9,7 +9,7 @@ class Parser:
     """
         Abstract Parser class
     """
-    def __init__(self, file_name, file_type=None):
+    def __init__(self, file_name, file_type=None, is_enrich=False):
         if not os.path.isfile(file_name):
             raise FileNotFoundError
         self.file_name = os.path.abspath(file_name)
@@ -17,6 +17,7 @@ class Parser:
         if file_type is None:
             _, file_type = os.path.splitext(file_name)
         self.file_type = file_type
+        self.is_enrich = is_enrich
         self.result = dict()
 
     def decode_vin(self, vin_number, model_year):
@@ -90,8 +91,9 @@ class XMLParser(Parser):
                 model_year = vehicle.find('ModelYear').text
                 self.result['transaction'][i]['vehicles'][j]['model_year'] = model_year
 
-                enrich_data = self.decode_vin(vin_number, model_year)
-                self.result['transaction'][i]['vehicles'][j].update(enrich_data)
+                if self.is_enrich:
+                    enrich_data = self.decode_vin(vin_number, model_year)
+                    self.result['transaction'][i]['vehicles'][j].update(enrich_data)
 
         return self.result
 
@@ -100,8 +102,8 @@ class CSVParser(Parser):
     """
         CSV Parser class
     """
-    def __init__(self, file1_name, file2_name, file_type=None):
-        super().__init__(file1_name, file_type)
+    def __init__(self, file1_name, file2_name, file_type=None, is_enrich=False):
+        super().__init__(file1_name, file_type, is_enrich)
         if not os.path.isfile(file2_name):
             raise FileNotFoundError
         self.file2_name = os.path.abspath(file2_name)
@@ -131,5 +133,11 @@ class CSVParser(Parser):
                         if row2['owner_id'] == self.result['transaction'][idx]['customer']['id']:
                             vehicles_count += 1
                             del row2["owner_id"]
-                            self.result['transaction'][idx]['vehicles'].append(row2)
+                            self.result['transaction'][idx]['vehicles'].append(dict(row2))
+                            if self.is_enrich:
+                                vin_number = self.result['transaction'][idx]['vehicles'][-1]['vin_number']
+                                model_year = self.result['transaction'][idx]['vehicles'][-1]['model_year']
+                                enrich_data = self.decode_vin(vin_number, model_year)
+                                self.result['transaction'][idx]['vehicles'][-1].update(enrich_data)
+
         return self.result
