@@ -16,6 +16,8 @@ class Parser:
     def parse(self):
         raise NotImplementedError
 
+    # TODO: Add a validation function (To validate against missing fields)
+
 
 class XMLParser(Parser):
     def parse(self):
