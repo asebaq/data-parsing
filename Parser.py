@@ -62,8 +62,10 @@ class XMLParser(Parser):
 
             units = customer.find('Units')
             auto = units.find('Auto')
-
             self.result['transaction'][i]['vehicles'] = list()
+
+            if auto is None:
+                return self.result
 
             for j, vehicle in enumerate(auto.findall('Vehicle')):
                 self.result['transaction'][i]['vehicles'].append(dict())
