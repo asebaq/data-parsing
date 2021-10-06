@@ -13,7 +13,7 @@ def main(args):
     result_path = os.path.join(result_path, args.format.lower())
 
     if args.format.lower() == 'xml':
-        for xml_file in args.path:
+        for xml_file in args.files:
             xml_parser = XMLParser(xml_file, args.format)
             result = xml_parser.parse()
             save_json(result_path, result)
