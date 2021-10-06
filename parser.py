@@ -1,8 +1,6 @@
 import argparse
 import os
-import json
-import datetime
-from utils import jprint
+from utils import save_json
 from Parser import XMLParser
 
 
@@ -17,14 +15,7 @@ def main(args):
     for xml_file in args.path:
         xml_parser = XMLParser(xml_file, args.type)
         result = xml_parser.parse()
-
-        os.makedirs(result_path, exist_ok=True)
-        ct = datetime.datetime.now()
-        ts = str(ct.timestamp())
-        result_path = os.path.join(result_path, f"{ts}_{result['file_name'][:-4]}.json")
-
-        with open(result_path, 'w') as results_file:
-            json.dump(result, results_file, ensure_ascii=False, indent=4)
+        save_json(result_path, result)
 
 
 if __name__ == '__main__':
